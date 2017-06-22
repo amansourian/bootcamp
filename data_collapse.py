@@ -35,23 +35,25 @@ ax.set_xlabel('$x$ = IPTG Concentration')
 ax.set_ylabel('$f(x)$ = Fold Change')
 ax.set_xscale('log')
 
-_ = ax.plot(q18a_iptg, q18a_fold_change, marker='.', linestyle='none', label='Q18A')
-_ = ax.plot(q18m_iptg, q18m_fold_change, marker='.', linestyle='none', label='Q18M')
-_ = ax.plot(wt_iptg, wt_fold_change, marker='.', linestyle='none', label='WT')
+_ = ax.plot(q18a_iptg, q18a_fold_change, marker='.', linestyle='none',
+            label='Q18A')
+_ = ax.plot(q18m_iptg, q18m_fold_change, marker='.', linestyle='none',
+            label='Q18M')
+_ = ax.plot(wt_iptg, wt_fold_change, marker='.', linestyle='none',
+            label='WT')
 
 
 # Write function for computing theoretical fold change.
 def fold_change(c, RK, KdA=0.017, KdI=0.002, Kswitch=5.8):
 
-    fc = (1 + (RK * (1+c/KdA)**2) / ((1+c/KdA)**2 + Kswitch*(1+c/KdI)**2))**(-1)
-
+    fc = (1 + (RK*(1+c/KdA)**2) / ((1+c/KdA)**2 + Kswitch*(1+c/KdI)**2))**(-1)
     return fc
 
 x = np.logspace(-6.3,1.6, num=100)
 
-_ = ax.plot(x, fold_change(x, q18a_rk), color=colors[0], alpha=.66)
-_ = ax.plot(x, fold_change(x, q18m_rk), color=colors[1], alpha=.66)
-_ = ax.plot(x, fold_change(x, wt_rk), color=colors[2], alpha=.66)
+_ = ax.plot(x, fold_change(x, q18a_rk), color=colors[0], alpha=.5)
+_ = ax.plot(x, fold_change(x, q18m_rk), color=colors[1], alpha=.5)
+_ = ax.plot(x, fold_change(x, wt_rk), color=colors[2], alpha=.5)
 
 ax.legend()
 
