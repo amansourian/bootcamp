@@ -27,8 +27,7 @@ _ = ax.set_ylabel('Count')
 # 'Paint' the data!
 _ = ax.hist(xa_low, bins=bins)
 
-# Save the figute
-fig.savefig('practice_histogram.pdf')
-
 # Show the plot
 plt.show()
+
+print(xa_high)
