@@ -18,8 +18,9 @@ t = data[:,0]
 V = data[:,1]
 
 fig, ax = plt.subplots(1, 1, figsize=(10, 3))
-ax.set_xlim(1395, 1400)
 ax.set_xlabel('t (ms)')
 ax.set_ylabel('V (µV)')
 
-_ = ax.plot(t, V)
+_ = ax.plot(t, V, linestyle='none', marker='.')
+
+plt.show()

@@ -23,7 +23,7 @@ ax.set_xlabel('Concentration of IPTG')
 ax.set_ylabel('Intensity of GFP')
 ax.set_xscale('log')
 
-_ = ax.plot(iptg, gfp)
+_ = ax.plot(iptg, gfp, linestyle='none', marker='.')
 _ = ax.errorbar(iptg, gfp, yerr=sem, linestyle='none', marker='.',
                 markersize=10)
 
