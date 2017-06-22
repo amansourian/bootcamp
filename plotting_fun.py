@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import seaborn as sns
-sns.set()
 
 """Use numpy and matplotlib to plot data and use seaborn to format."""
 
