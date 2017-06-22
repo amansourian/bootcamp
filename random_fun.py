@@ -1,28 +1,19 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
-import seaborn as sns
+bd_1975 = np.loadtxt('data/beak_depth_scandens_1975.csv')
+bd_2012 = np.loadtxt('data/beak_depth_scandens_2012.csv')
 
-import bootcamp_utils
 
-"""Use numpy and matplotlib to plot data and use seaborn to format."""
+def bs_replicate(data, func=np.mean):
+    """Compute a bootstrap replicate from data."""
+    bs_sample = np.random.choice(data, replace=True, size=len(data))
+    return func(bs_sample)
 
-# JB's preferences.
-colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
-          '#9467bd', '#8c564b', '#e377c2', '#7f7f7f',
-          '#bcbd22', '#17becf']
-sns.set(style='whitegrid', palette=colors, rc={'axes.labelsize': 16})
+def draw_bs_reps(data, func=np.mean, size=10000):
+    """Draw bootstrap replicates from 1D data."""
+    return np.array([bs_replicate(data, func=func) for _ in range(size)])
 
-mu = 10
-sigma = 1
+# Generate lots of replicates.
+n_reps = 100000
 
-x_rnd = np.random.normal(mu, sigma, size=100000)
-
-# Make ECDF
-x, y = bootcamp_utils.ecdf(x_rnd)
-
-# Plot ECDF
-fig, ax = plt.subplots(1, 1)
-_ = ax.plot(x, y, marker='.', linestyle='none')
-
-plt.show()
+bs_reps = [bs_replicate(bd_2012, func=np.mean) for _ in range(n_reps)]
