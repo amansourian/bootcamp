@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
 import seaborn as sns
@@ -10,12 +11,17 @@ Module for functions and other utilities written during bootcamp.
 """
 
 
-def ecdf(data):
+def ecdf(data, hue=None, formal=False, buff=0.1, min_x=None, max_x=None,
+              ax=None):
     """Compute ECDF function."""
 # y_j=(j+1)/n, where n is the number of data points and 0≤j≤n−1.
-    x = np.sort(data)
-    y = (np.arange(1,len(data) + 1))/len(data)
-    return x, y
+    if formal == True:
+        _ecdf_formal(data, hue=None, buff=0.1, min_x=None, max_x=None,
+                      ax=None)
+    else:
+        x = np.sort(data)
+        y = (np.arange(1,len(data) + 1))/len(data)
+        return x, y
 
 
 def bs_replicate(data, func=np.mean):
@@ -86,6 +92,58 @@ def one_to_three(seq):
     return ''.join(aa_list[:-1])
 
 
+def _ecdf_formal(data, hue=None, buff=0.1, min_x=None, max_x=None,
+              ax=None):
+    """
+    Generate `x` and `y` values for plotting a formal ECDF.
+
+    Parameters
+    ----------
+    data : array_like
+        Array of data to be plotted as an ECDF.
+    buff : float, default 0.1
+        How long the tails at y = 0 and y = 1 should extend as a fraction
+        of the total range of the data.
+    min_x : float, default None
+        Minimum value of `x` to include on plot. Overrides `buff`.
+    max_x : float, default None
+        Maximum value of `x` to include on plot. Overrides `buff`.
+
+    Returns
+    -------
+    x : array
+        `x` values for plotting
+    y : array
+        `y` values for plotting
+    """
+    # Get x and y values for data points
+    x, y = _ecdf_dots(data)
+
+    # Set defaults for min and max tails
+    if min_x is None:
+        min_x = x[0] - (x[-1] - x[0])*buff
+    if max_x is None:
+        max_x = x[-1] + (x[-1] - x[0])*buff
+
+    # Set up output arrays
+    x_formal = np.empty(2*(len(x) + 1))
+    y_formal = np.empty(2*(len(x) + 1))
+
+    # y-values for steps
+    y_formal[:2] = 0
+    y_formal[2::2] = y
+    y_formal[3::2] = y
+
+    # x- values for steps
+    x_formal[0] = min_x
+    x_formal[1] = x[0]
+    x_formal[2::2] = x
+    x_formal[3:-1:2] = x[1:]
+    x_formal[-1] = max_x
+
+    return x_formal, y_formal
+
+
 def ecdf_plot(data, value, hue=None, formal=False, buff=0.1, min_x=None, max_x=None,
               ax=None):
     """
@@ -93,7 +151,7 @@ def ecdf_plot(data, value, hue=None, formal=False, buff=0.1, min_x=None, max_x=N
 
     Parameters
     ----------
-    df : Pandas DataFrame
+    data : Pandas DataFrame
         Tidy DataFrame with data sets to be plotted.
     value : column name of DataFrame
         Name of column that contains data to make ECDF with.
@@ -130,7 +188,7 @@ def ecdf_plot(data, value, hue=None, formal=False, buff=0.1, min_x=None, max_x=N
         ax.set_ylabel('ECDF')
 
     if hue is None:
-        x, y = ecdf(df[value], formal=formal, buff=buff, min_x=min_x, max_x=max_x)
+        x, y = ecdf(data[value], formal=formal, buff=buff, min_x=min_x, max_x=max_x)
 
         # Make plots
         if formal:
@@ -138,7 +196,7 @@ def ecdf_plot(data, value, hue=None, formal=False, buff=0.1, min_x=None, max_x=N
         else:
             _ = ax.plot(x, y, marker='.', linestyle='none')
     else:
-        gb = df.groupby(hue)
+        gb = data.groupby(hue)
         ecdfs = gb[value].apply(ecdf, formal=formal, buff=buff, min_x=min_x, max_x=max_x)
 
         # Make plots
@@ -154,4 +212,8 @@ def ecdf_plot(data, value, hue=None, formal=False, buff=0.1, min_x=None, max_x=N
 
     return ax
 
-ax = ecdf_plot(df, 'impact force (mN)', hue='ID')
+
+def bs_replicate(data, func=np.mean):
+    """Compute a bootstrap replicate from data."""
+    bs_sample = np.random.choice(data, size=len(data))
+    return func(bs_sample)
