@@ -14,7 +14,7 @@ Module for functions and other utilities written during bootcamp.
 def ecdf(data, hue=None, formal=False, buff=0.1, min_x=None, max_x=None,
               ax=None):
     """Compute ECDF function."""
-# y_j=(j+1)/n, where n is the number of data points and 0≤j≤n−1.
+    # y_j=(j+1)/n, where n is the number of data points and 0≤j≤n−1.
     if formal == True:
         _ecdf_formal(data, hue=None, buff=0.1, min_x=None, max_x=None,
                       ax=None)
@@ -217,3 +217,9 @@ def bs_replicate(data, func=np.mean):
     """Compute a bootstrap replicate from data."""
     bs_sample = np.random.choice(data, size=len(data))
     return func(bs_sample)
+
+
+# def draw_bs_reps(data, func=np.mean, size=1):
+#     """"""
+#     n = len(data)
+#     bs_reps = [bs_replicate(data, func=np.mean) for _ in range(len(data))]

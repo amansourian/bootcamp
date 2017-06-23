@@ -31,6 +31,7 @@ df_pesticide_weight = df_weight.loc[df_weight['Treatment'] == 'Pesticide', :]
 df_control_sperm = df_sperm.loc[df_sperm['Treatment'] == 'Control', :]
 df_pesticide_sperm = df_sperm.loc[df_sperm['Treatment'] == 'Pesticide', :]
 
+
 # compute mean weights/sperm of control/pesticide groups !!!
 mean_control_weight = df_control_weight.loc[:, 'Weight'].apply(np.mean)
 mean_pesticide_weight = df_pesticide_weight.loc[:, 'Weight'].apply(np.mean)
@@ -39,18 +40,33 @@ mean_control_sperm = df_control_sperm.loc[:, 'Quality'].apply(np.mean)
 mean_pesticide_sperm = df_pesticide_sperm.loc[:, 'Quality'].apply(np.mean)
 
 # # compute median weights/sperm of control/pesticide groups !!!
-# median_treatment_weight = df_weight.loc[:,'Weight'].apply(np.median)
-#
-# median_treatment_sperm = df_sperm.loc[:,'Quality'].apply(np.median)
+mean_cont_weight = np.mean(df_weight.loc[df_weight['Treatment']=='Control', 'Weight'])
+mean_pest_weight = np.mean(df_weight.loc[df_weight['Treatment']=='Pesticide', 'Weight'])
+
+mean_cont_sperm = np.mean(df_sperm.loc[df_sperm['Treatment']=='Control', 'Quality'])
+mean_pest_sperm = np.mean(df_sperm.loc[df_sperm['Treatment']=='Pesticide', 'Quality'])
+
+# print median weight/quality for control/pesticide groups
+print('Mean weight for control: ', mean_cont_weight, 'mg')
+print('Mean weight for pesticide: ', mean_pest_weight, 'mg')
+
+print('Mean quality for control: ', mean_cont_sperm, 'mg')
+print('Mean quality for pesticide: ', mean_pest_sperm, 'mg')
 
 # create and compute bootstrap replicates
-bs_replicate_weight = bootcamp_utils.bs_replicate(df_weight.loc[:, 'Weight'],
-                                                    func=np.mean)
-bs_reps_weight = np.array([bs_replicate_weight for _ in range(1000)])
+# bs_replicate_weight = bootcamp_utils.bs_replicate(df_weight.loc
+#                             [:, 'Weight'], func=np.mean)
 
-bs_replicate_sperm = bootcamp_utils.bs_replicate(df_sperm.loc[:, 'Quality'],
-                                                    func=np.mean) # !!!
-bs_reps_sperm = np.array([bs_replicate_sperm for _ in range(1000)])
+bs_reps_weight = np.array([bootcamp_utils.bs_replicate
+                            (df_weight.loc[:, 'Weight'], func=np.mean)
+                            for _ in range(100000)])
+
+# bs_replicate_sperm = bootcamp_utils.bs_replicate(df_sperm.loc[:, 'Quality'].dropna(),
+#                                                     func=np.mean) # !!!
+
+bs_reps_sperm = np.array([bootcamp_utils.bs_replicate
+                            (df_sperm.loc[:, 'Quality'].dropna(), func=np.mean)
+                            for _ in range(100000)])
 
 # compute confidence interval
 conf_int_weight = np.percentile(bs_reps_weight, [2.5, 97.5])
@@ -67,12 +83,12 @@ bs_samp_pesticide_weight = np.random.choice(df_pesticide_weight['Weight'],
                             replace=True,
                             size=len(df_pesticide_weight['Weight']))
 
-bs_samp_control_sperm = np.random.choice(df_control_sperm['Quality'],
+bs_samp_control_sperm = np.random.choice(df_control_sperm['Quality'].dropna(),
                             replace=True,
-                            size=len(df_control_sperm['Quality']))
-bs_samp_pesticide_sperm = np.random.choice(df_pesticide_sperm['Quality'],
+                            size=len(df_control_sperm['Quality'].dropna()))
+bs_samp_pesticide_sperm = np.random.choice(df_pesticide_sperm['Quality'].dropna(),
                             replace=True,
-                            size=len(df_pesticide_sperm['Quality']))
+                            size=len(df_pesticide_sperm['Quality'].dropna()))
 
 
 # convert bootstrap sample array to dataframe
