@@ -7,3 +7,6 @@ python:
 
 # command to run tests
 script: py.test
+
+notifications:
+  email: false
